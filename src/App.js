@@ -9,7 +9,8 @@ import {
 import './App.css';
 import InfoBox from './components/InfoBox';
 import Map from './components/Map';
-import Table from './components/Table';
+import Table from './components/Table/Table';
+import { sortData } from './components/Table/util';
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -34,7 +35,9 @@ function App() {
             name: country.country,
             value: country.countryInfo.iso2, // us ,usa fr
           }));
-          setTableData(data);
+
+          const sortedData = sortData(data); // sort table
+          setTableData(sortedData);
           setCountries(countries); // change the countries
         });
     };
@@ -85,16 +88,19 @@ function App() {
             title="Coronavirus cases"
             cases={countryInfo.todayCases}
             total={countryInfo.cases}
+            Total
           />
           <InfoBox
             title="Recovered"
             cases={countryInfo.todayRecovered}
             total={countryInfo.recovered}
+            Total
           />
           <InfoBox
             title="Deaths"
             cases={countryInfo.todayDeaths}
             total={countryInfo.deaths}
+            Total
           />
         </div>
         <Map />
