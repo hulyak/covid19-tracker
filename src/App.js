@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 import {
   MenuItem,
   FormControl,
@@ -6,15 +7,14 @@ import {
   Card,
   CardContent,
 } from '@material-ui/core';
-import './App.css';
-import InfoBox from './components/InfoBox';
-import Map from './components/Map/Map';
+import InfoBox from './components/InfoBox/InfoBox';
+import LineGraph from './components/LineGraph/LineGraph';
 import Table from './components/Table/Table';
-import { sortData } from './components/Table/util';
-import LineGraph from './components/LineGraph';
+import Map from './components/Map/Map';
+import { sortData, prettyPrintStat } from './util';
 import 'leaflet/dist/leaflet.css';
 
-function App() {
+const App = () => {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState('worldwide');
   const [countryInfo, setCountryInfo] = useState({});
@@ -22,7 +22,10 @@ function App() {
   // map props
   const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
   const [mapZoom, setMapZoom] = useState(3);
+  // circles for the map
   const [mapCountries, setMapCountries] = useState([]);
+  // casesType can be 'cases, recovered, deaths'
+  const [casesType, setCasesType] = useState('cases');
 
   useEffect(() => {
     fetch('https://disease.sh/v3/covid-19/all')
@@ -43,11 +46,12 @@ function App() {
           }));
 
           const sortedData = sortData(data); // sort table
-          setTableData(sortedData);
-          setMapCountries(data); // get all the json response for all the countries
           setCountries(countries); // change the countries
+          setMapCountries(data); // get all the json response for all the countries
+          setTableData(sortedData);
         });
     };
+
     getCountriesData(); // call useEffect
   }, []);
 
@@ -64,8 +68,13 @@ function App() {
       // all of the data from the country response
       setCountryInfo(data);
       // change the map according to chosen country from dropdown
-      setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
-      setMapZoom(4);
+      if (countryCode === 'worldwide') {
+        setMapCenter([34.80746, -40.4796]);
+        setMapZoom(2);
+      } else {
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(4);
+      }
     });
   };
 
@@ -95,37 +104,51 @@ function App() {
 
         <div className="app__stats">
           <InfoBox
+            isRed
+            active={casesType === 'cases'}
+            onClick={(e) => setCasesType('cases')}
             title="Coronavirus cases"
-            cases={countryInfo.todayCases}
+            cases={prettyPrintStat(countryInfo.todayCases)}
             total={countryInfo.cases}
             Total
           />
           <InfoBox
+            active={casesType === 'recovered'}
+            onClick={(e) => setCasesType('recovered')}
             title="Recovered"
-            cases={countryInfo.todayRecovered}
+            cases={prettyPrintStat(countryInfo.todayRecovered)}
             total={countryInfo.recovered}
             Total
           />
           <InfoBox
+            isRed
+            active={casesType === 'deaths'}
+            onClick={(e) => setCasesType('deaths')}
             title="Deaths"
-            cases={countryInfo.todayDeaths}
+            cases={prettyPrintStat(countryInfo.todayDeaths)}
             total={countryInfo.deaths}
             Total
           />
         </div>
-        <Map countries={mapCountries} center={mapCenter} zoom={mapZoom} />
+        <Map
+          countries={mapCountries}
+          center={mapCenter}
+          zoom={mapZoom}
+          // change the colors with case types
+          casesType={casesType}
+        />
       </div>
 
       <Card className="app__right">
         <CardContent>
           <h3>Live Cases by Country</h3>
           <Table countries={tableData} />
-          <h3>Worldwide new cases</h3>
-          <LineGraph />
+          <h3 className="app__graphTitle">Worldwide new {casesType}</h3>
+          <LineGraph casesType={casesType} className="app__graph" />
         </CardContent>
       </Card>
     </div>
   );
-}
+};
 
 export default App;
