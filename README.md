@@ -1,6 +1,6 @@
 # Covid19 Tracker App with React 
 
-[Live app](https://blissful-payne-0d2fd2.netlify.app/)
+## [Live app](https://blissful-payne-0d2fd2.netlify.app/)
 
 ## Features
 
