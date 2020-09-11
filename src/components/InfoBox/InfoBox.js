@@ -2,9 +2,9 @@ import React from 'react';
 import './InfoBox.css';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
+// onClick - custom prop
 function InfoBox({ title, cases, isRed, active, total, ...props }) {
   return (
-    // onClick - custom prop
     <Card
       onClick={props.onClick}
       // add infoBox--selected class if it is active
