@@ -1,5 +1,7 @@
 # Covid19 Tracker App with React 
 
+[Live app] (https://blissful-payne-0d2fd2.netlify.app/)
+
 ## Features
 
 - Track live data of Covid 19 cases, deaths and recovered. Users can see the total cases by country from the table, also see every day cases from the info boxes and map. 
